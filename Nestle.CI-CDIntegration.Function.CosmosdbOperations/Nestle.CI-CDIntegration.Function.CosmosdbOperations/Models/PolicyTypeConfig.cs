@@ -9,7 +9,10 @@ namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Models
         public string id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
-        public bool HasARM { get; set; }
-        public List<PolicyEffectWorkFlowConfig> policyEffectWorkFlowConfig { get; set; }
+        public bool hasArm { get; set; }
+        public string emailTemplateId { get; set; }
+        //public List<PolicyEffectWorkFlowConfig> policyEffectWorkFlowConfig { get; set; }
+       
+
     }
 }

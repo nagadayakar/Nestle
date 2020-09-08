@@ -6,19 +6,17 @@ namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Models
 {
     public class ExceptionTagRequest
     {
-        public string Id { get; set; }
-        public string ExceptionTagRequestor { get; set; }
-
-        public string ExceptionTagApprover { get; set; }
-        public string PolicyId { get; set; }
-        public string ResourceId { get; set; }
-        public string SnowId { get; set; }
-        public DateTime RequestDate { get; set; }
-        public string RequestStatus { get; set; }
-        public DateTime TagInsertDate { get; set; }
-        public DateTime TagExpiryDate { get; set; }
-
-        public DateTime LastUpdatedDate { get; set; }
-        public string LastUpdatedBy { get; set; }
+        public string id { get; set; }
+        public string exceptionTagRequestor { get; set; }
+        public string exceptionTagApprover { get; set; }
+        public string policyId { get; set; }
+        public string resourseId { get; set; }
+        public string snowId { get; set; }
+        public string requestDate { get; set; }
+        public string requestStatus { get; set; }
+        public string tagInsertDate { get; set; }
+        public string tagExpiryDate { get; set; }
+        public string lastUpdatedDate { get; set; }
+        public string lastUpdatedBy { get; set; }
     }
 }

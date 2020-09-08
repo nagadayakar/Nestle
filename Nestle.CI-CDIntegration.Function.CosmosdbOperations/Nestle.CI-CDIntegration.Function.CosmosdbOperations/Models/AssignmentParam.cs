@@ -4,9 +4,12 @@ using System.Text;
 
 namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Models
 {
-    public class AssignmentParam
+    public class AssignmentParams
     {
-        public string resourseGroupName { get; set; }
-        public string policyAssignentMode { get; set; }
+        //public string policyAssignentMode { get; set; }
+        public string policyId { get; set; }
+        public string policyUnitId { get; set; }
+        public string parameterName { get; set; }
+        public string parameterValue { get; set; }
     }
 }

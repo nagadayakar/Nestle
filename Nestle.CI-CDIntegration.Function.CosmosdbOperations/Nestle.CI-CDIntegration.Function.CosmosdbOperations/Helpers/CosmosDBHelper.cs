@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Nestle.CI_CDIntegration.Function.CosmosdbOperations.Models;
 using System.Linq.Expressions;
 using Microsoft.Azure.Documents.Linq;
+using Newtonsoft.Json;
+using Microsoft.Azure.Cosmos;
 
 namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Helpers
 {
@@ -19,7 +21,8 @@ namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Helpers
         private readonly DocumentClient _client;
         private readonly string _accountUrl;
         private readonly string _primarykey;
-        private static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+        private static readonly FeedOptions DefaultOptions = new FeedOptions { EnableCrossPartitionQuery = true,
+        };
         public CosmosDBHelper(ILogger log)
         {
 
@@ -28,8 +31,9 @@ namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Helpers
             _client = new DocumentClient(new Uri(_accountUrl), _primarykey);
         }
 
-        public async Task<dynamic> GetData(string policyName, ILogger log)
+        public async Task<dynamic> GetPolicyDocument(string policyName, ILogger log)
         {
+
             try
             {
                 //var result = await _client.ReadDocumentFeedAsync(UriFactory.CreateDocumentCollectionUri(dbName, name),
@@ -39,13 +43,41 @@ namespace Nestle.CI_CDIntegration.Function.CosmosdbOperations.Helpers
                 var CosmosDBcollectionUri = UriFactory.CreateDocumentCollectionUri(cosmosDbName, cosmosDbDocumentListName);
 
                 var policy = _client.CreateDocumentQuery<dynamic>(CosmosDBcollectionUri,
-                   $"SELECT * FROM p WHERE p.policyname = '{policyName}'", DefaultOptions).ToList();
+                   $"SELECT * FROM p WHERE p.policyName = '{policyName}'", DefaultOptions).ToList();
                 return policy;
             }
+
             catch (Exception ex)
             {
-                return null;
+                throw new Exception(ex.Message);
             }
+        }
+
+        public async Task<bool> UpdatePolicyDocumentAsync(string policyName, string stauts, ILogger log)
+        {
+            var cosmosDbName = Environment.GetEnvironmentVariable(Constant.CosmosDBNameKey);
+            var cosmosDbDocumentListName = Environment.GetEnvironmentVariable(Constant.PolicyDocumentListNameKey);
+            var CosmosDBcollectionUri = UriFactory.CreateDocumentCollectionUri(cosmosDbName, cosmosDbDocumentListName);
+
+            var policy = _client.CreateDocumentQuery(CosmosDBcollectionUri,
+               $"SELECT * FROM p WHERE p.policyName = '{policyName}'", DefaultOptions).ToList();
+
+            //var policyDocument = policy.First();
+            
+
+            var policyDocument1 = JsonConvert.DeserializeObject<Policy>(policy[0].ToString());
+            Console.WriteLine(policyDocument1.status);
+
+            //var doc = _client.CreateDocumentQuery<Policy>(CosmosDBcollectionUri)
+            //                 .Where(r => r.policyName == policyName)
+            //                 .AsEnumerable()
+            //                 .SingleOrDefault();
+            policyDocument1.status = stauts;
+           var taskObject = await _client.UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(cosmosDbName, cosmosDbDocumentListName), policyDocument1);
+            if (taskObject != null)
+                return true;
+            else
+                return false;
         }
 
         //private static DocumentClient client;
